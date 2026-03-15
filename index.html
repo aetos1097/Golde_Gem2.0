@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golden Gems — Donde la Naturaleza se Convierte en Lujo</title>
+  <meta name="description" content="Joyas únicas y éticas, cultivadas con cuidado. Esmeraldas colombianas en oro de 18 kilates." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/Golde_Gem2.0/assets/index-BbVW_eDC.js"></script>
+  <link rel="stylesheet" crossorigin href="/Golde_Gem2.0/assets/index-DnWjus7t.css">
+</head>
+<body>
+
+  <!-- ═══════════ NAVIGATION ═══════════ -->
+  <nav class="nav fixed top-0 left-0 w-full z-50 border-b border-transparent" id="navbar">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-mid to-emerald-dark flex items-center justify-center">
+          <svg class="w-5 h-5 text-gold-light" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-display text-xl font-bold tracking-wide" style="color: var(--text-primary)">GOLDEN</span>
+          <span class="font-display text-xl font-light tracking-wide" style="color: var(--gold)"> GEMS</span>
+        </div>
+      </a>
+
+      <!-- Desktop Links -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#collections" class="nav-link text-sm">Colecciones</a>
+        <a href="#essence" class="nav-link text-sm">Ética</a>
+        <a href="#products" class="nav-link text-sm">Historia</a>
+        <a href="#contact" class="nav-link text-sm">Contacto</a>
+      </div>
+
+      <!-- Right: Icons + Toggle -->
+      <div class="flex items-center gap-4">
+        <!-- Cart -->
+        <button class="p-2 rounded-full hover:bg-black/5 dark-hover:bg-white/5 transition" aria-label="Carrito">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+          </svg>
+        </button>
+        <!-- User -->
+        <button class="p-2 rounded-full hover:bg-black/5 transition" aria-label="Cuenta">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+          </svg>
+        </button>
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+        </button>
+        <!-- Mobile Hamburger -->
+        <button class="md:hidden p-2" id="menuBtn" aria-label="Menú">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed top-0 right-0 h-full w-72 z-50 p-8 flex flex-col gap-6 md:hidden" style="background: var(--bg-secondary)" id="mobileMenu">
+      <button id="closeMenu" class="self-end p-2" aria-label="Cerrar menú">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <a href="#collections" class="nav-link text-lg" onclick="closeMobileMenu()">Colecciones</a>
+      <a href="#essence" class="nav-link text-lg" onclick="closeMobileMenu()">Ética</a>
+      <a href="#products" class="nav-link text-lg" onclick="closeMobileMenu()">Historia</a>
+      <a href="#contact" class="nav-link text-lg" onclick="closeMobileMenu()">Contacto</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HERO SECTION ═══════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <div class="hero-ring hero-ring-1"></div>
+      <div class="hero-ring hero-ring-2"></div>
+      <div class="hero-ring hero-ring-3"></div>
+    </div>
+
+    <div class="hero-content max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full pt-24 pb-16">
+      <!-- Text -->
+      <div class="text-center lg:text-left">
+        <p class="text-gold-bright text-sm font-semibold tracking-[0.2em] uppercase mb-4 reveal">Colecciones Exclusivas</p>
+        <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 reveal reveal-delay-1">
+          GOLDEN GEMS:<br/>
+          <span class="italic font-light text-gold-light">Donde la Naturaleza<br/>se Convierte en Lujo</span>
+        </h1>
+        <p class="text-cream-dark/80 text-lg md:text-xl max-w-lg mx-auto lg:mx-0 mb-10 reveal reveal-delay-2">
+          Joyas Únicas y Éticas, Cultivadas con Cuidado.<br/>
+          Nuestra Colección de Verano.
+        </p>
+        <a href="#products" class="btn-cta inline-block px-10 py-4 rounded-full text-sm reveal reveal-delay-3">
+          DESCUBRE NUESTRA COLECCIÓN
+        </a>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="hidden lg:flex justify-center items-center relative">
+        <div class="relative">
+          <img src="/Golde_Gem2.0/assets/anillo1-XxMEpS4Z.jpeg" alt="Anillo de esmeralda en oro" class="hero-jewelry w-80 h-80 object-cover rounded-3xl border-2 border-gold-bright/30" />
+          <div class="absolute -bottom-6 -right-6 w-40 h-40 rounded-2xl overflow-hidden border-2 border-gold-bright/30 shadow-2xl">
+            <img src="/Golde_Gem2.0/assets/manilla-D6SP7RhM.jpeg" alt="Manilla de oro con esmeralda" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
+      <span class="text-white text-xs tracking-widest uppercase">Scroll</span>
+      <div class="w-5 h-8 border-2 border-white/40 rounded-full flex justify-center pt-1">
+        <div class="w-1 h-2 bg-white rounded-full animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ NUESTRA ESENCIA ═══════════ -->
+  <section class="py-24 px-6" id="essence">
+    <div class="max-w-6xl mx-auto text-center">
+      <p class="text-sm font-semibold tracking-[0.2em] uppercase mb-3 reveal" style="color: var(--gold)">Lo Que Nos Define</p>
+      <h2 class="section-title text-4xl md:text-5xl font-bold mb-16 reveal reveal-delay-1">NUESTRA ESENCIA</h2>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Card 1 -->
+        <div class="essence-card reveal reveal-delay-1">
+          <div class="essence-icon">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 01-1.161.886l-.143.048a1.107 1.107 0 00-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 01-1.652.928l-.679-.906a1.125 1.125 0 00-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 00-8.862 12.872M12.75 3.031a9 9 0 016.69 14.036m0 0l-.177-.529A2.25 2.25 0 0017.128 15H16.5l-.324-.324a1.453 1.453 0 00-2.328.377l-.036.073a1.586 1.586 0 01-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 01-5.276 3.67"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-semibold mb-3">Sostenibilidad y Naturaleza</h3>
+          <p class="text-sm leading-relaxed">Cada gema proviene de fuentes éticas y responsables, respetando la tierra y sus comunidades.</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="essence-card reveal reveal-delay-2">
+          <div class="essence-icon">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-semibold mb-3">Artesanía Local</h3>
+          <p class="text-sm leading-relaxed">Nuestros orfebres colombianos crean cada pieza a mano con técnicas transmitidas por generaciones.</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="essence-card reveal reveal-delay-3">
+          <div class="essence-icon">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-semibold mb-3">Certificación Premium</h3>
+          <p class="text-sm leading-relaxed">Todas nuestras esmeraldas cuentan con certificación internacional de autenticidad y calidad.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ PRODUCTOS DESTACADOS ═══════════ -->
+  <section class="py-24 px-6" id="products" style="background: var(--bg-secondary)">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <p class="text-sm font-semibold tracking-[0.2em] uppercase mb-3 reveal" style="color: var(--gold)">Colección de Temporada</p>
+        <h2 class="section-title text-4xl md:text-5xl font-bold reveal reveal-delay-1">PRODUCTOS DESTACADOS</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Product 1 -->
+        <div class="product-card reveal reveal-delay-1">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/anillo1-XxMEpS4Z.jpeg" alt="Anillo Esmeralda Clásico" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Anillos</p>
+            <h3 class="product-name mb-2">Anillo Esmeralda Clásico</h3>
+            <p class="product-price">$2.450.000</p>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card reveal reveal-delay-2">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/manilla-D6SP7RhM.jpeg" alt="Manilla Dorada con Esmeralda" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Manillas</p>
+            <h3 class="product-name mb-2">Manilla Dorada con Esmeralda</h3>
+            <p class="product-price">$4.000.000</p>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card reveal reveal-delay-3">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/anillo3-DvEopOE8.jpeg" alt="Anillo Trébol Esmeralda" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Anillos</p>
+            <h3 class="product-name mb-2">Anillo Trébol Esmeralda</h3>
+            <p class="product-price">$2.900.000</p>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card reveal reveal-delay-4">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/manilla2-ByAEpcn1.jpeg" alt="Manilla Delicada Esmeralda" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Manillas</p>
+            <h3 class="product-name mb-2">Manilla Delicada Esmeralda</h3>
+            <p class="product-price">$4.000.000</p>
+          </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card reveal reveal-delay-1">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/anillo4-3XfGJvH2.jpeg" alt="Anillo Solitario Esmeralda" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Anillos</p>
+            <h3 class="product-name mb-2">Anillo Solitario Esmeralda</h3>
+            <p class="product-price">$3.200.000</p>
+          </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card reveal reveal-delay-2">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/anillo5-DqETSRtL.jpeg" alt="Anillo Elegancia Verde" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Anillos</p>
+            <h3 class="product-name mb-2">Anillo Elegancia Verde</h3>
+            <p class="product-price">$2.750.000</p>
+          </div>
+        </div>
+
+        <!-- Product 7 -->
+        <div class="product-card reveal reveal-delay-3">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/anillo6-DdWkfDSY.jpeg" alt="Anillo Esmeralda Royal" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Anillos</p>
+            <h3 class="product-name mb-2">Anillo Esmeralda Royal</h3>
+            <p class="product-price">$4.100.000</p>
+          </div>
+        </div>
+
+        <!-- Product 8 -->
+        <div class="product-card reveal reveal-delay-4">
+          <div class="product-img-wrapper">
+            <img src="/Golde_Gem2.0/assets/manilla3-DdU85iQZ.jpeg" alt="Manilla Oro Tejido" class="product-img" />
+          </div>
+          <div class="product-info">
+            <p class="product-category mb-1">Manillas</p>
+            <h3 class="product-name mb-2">Manilla Oro Tejido</h3>
+            <p class="product-price">$5.600.000</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="py-16 px-6" id="contact">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+      <!-- Brand -->
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-bright to-gold flex items-center justify-center">
+            <svg class="w-5 h-5 text-emerald-deep" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div>
+            <span class="font-display text-xl font-bold text-gold-light">GOLDEN</span>
+            <span class="font-display text-xl font-light text-gold-bright"> GEMS</span>
+          </div>
+        </div>
+        <p class="text-sm opacity-70 leading-relaxed">Descubre gemas Premium.<br/>Joyas cultivadas con amor y ética.</p>
+        <!-- Social -->
+        <div class="flex gap-3 mt-6">
+          <a href="#" class="w-9 h-9 rounded-full border border-gold-bright/30 flex items-center justify-center hover:bg-gold-bright/10 transition" aria-label="Facebook">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 rounded-full border border-gold-bright/30 flex items-center justify-center hover:bg-gold-bright/10 transition" aria-label="Instagram">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 rounded-full border border-gold-bright/30 flex items-center justify-center hover:bg-gold-bright/10 transition" aria-label="Twitter">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 rounded-full border border-gold-bright/30 flex items-center justify-center hover:bg-gold-bright/10 transition" aria-label="WhatsApp">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.918l4.458-1.495A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.325 0-4.49-.682-6.32-1.852l-.442-.291-2.633.883.883-2.633-.291-.442A9.955 9.955 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Social Links -->
+      <div>
+        <h4 class="font-display text-lg font-semibold mb-4" style="color: var(--color-gold-bright)">Social links</h4>
+        <ul class="space-y-3 text-sm opacity-80">
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+          <li><a href="#">@goldengems</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div>
+        <h4 class="font-display text-lg font-semibold mb-4" style="color: var(--color-gold-bright)">Newsletter Signup</h4>
+        <p class="text-sm opacity-70 mb-4">Recibe novedades y ofertas exclusivas.</p>
+        <form class="flex gap-2" onsubmit="event.preventDefault()">
+          <input type="email" placeholder="Signup e-mail" class="newsletter-input flex-1 text-sm" />
+          <button type="submit" class="w-10 h-10 rounded-full bg-gold-bright flex items-center justify-center text-emerald-deep hover:bg-gold-light transition flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 class="font-display text-lg font-semibold mb-4" style="color: var(--color-gold-bright)">Contacto</h4>
+        <ul class="space-y-3 text-sm opacity-80">
+          <li>Celular de contacto info</li>
+          <li>+1 323 306 7670</li>
+          <li>www.goldengems.com</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-gold-bright/20 flex flex-col md:flex-row items-center justify-between text-sm opacity-60">
+      <p>Descubre gemas &middot; Premium stones</p>
+      <p>Contactos info</p>
+    </div>
+  </footer>
+
+</body>
+</html>
