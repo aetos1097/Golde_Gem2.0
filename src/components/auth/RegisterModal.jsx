@@ -51,7 +51,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
   return (
     <div className="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-2xl p-8 relative max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-md rounded-2xl px-6 py-5 relative"
         style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -61,10 +61,10 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
           </svg>
         </button>
 
-        <div className="text-center mb-8">
-          <img src="/Logo/logo.PNG" alt="Golden Gems Logo" className="w-20 h-20 rounded-full object-cover mx-auto mb-4" />
-          <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Crear Cuenta</h2>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Unete a Golden Gems</p>
+        <div className="text-center mb-4">
+          <img src="/Logo/logo.PNG" alt="Golden Gems Logo" className="w-14 h-14 rounded-full object-cover mx-auto mb-2" />
+          <h2 className="font-display text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Crear Cuenta</h2>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Unete a Golden Gems</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -81,14 +81,14 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={onLoginClick}
-                className="px-4 py-2 text-sm font-medium rounded-full transition"
+                className="px-4 py-2 text-sm font-medium rounded-full cursor-pointer hover:bg-black/10 transition"
                 style={{ color: 'var(--text-primary)' }}
               >
                 Ingresar
               </button>
               <button
                 onClick={onRegisterClick}
-                className="px-4 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-emerald-mid to-emerald-dark text-gold-light hover:shadow-lg transition"
+                className="px-4 py-2 text-sm font-medium rounded-full cursor-pointer bg-gradient-to-r from-emerald-mid to-emerald-dark text-gold-light hover:shadow-lg hover:scale-105 transition"
               >
                 Registrarse
               </button>
