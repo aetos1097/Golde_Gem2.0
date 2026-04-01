@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { chatApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { alertError } from '../utils/alerts';
 
 function formatPrice(price) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(price);
@@ -106,7 +107,7 @@ function ChatWindow({ conversationId, userId }) {
       setNewMessage('');
       loadMessages();
     } catch (err) {
-      alert(err.message);
+      alertError('Error', err.message);
     }
   };
 
@@ -120,7 +121,7 @@ function ChatWindow({ conversationId, userId }) {
       setShowOffer(false);
       loadMessages();
     } catch (err) {
-      alert(err.message);
+      alertError('Error', err.message);
     }
   };
 
@@ -129,7 +130,7 @@ function ChatWindow({ conversationId, userId }) {
       await chatApi.acceptPrice(conversationId);
       loadMessages();
     } catch (err) {
-      alert(err.message);
+      alertError('Error', err.message);
     }
   };
 
@@ -138,7 +139,7 @@ function ChatWindow({ conversationId, userId }) {
       await chatApi.rejectPrice(conversationId);
       loadMessages();
     } catch (err) {
-      alert(err.message);
+      alertError('Error', err.message);
     }
   };
 

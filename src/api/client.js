@@ -16,7 +16,8 @@ async function request(endpoint, options = {}) {
     headers,
   });
 
-  const data = await res.json();
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : {};
 
   if (!res.ok) {
     throw new Error(data.message || 'Error en la solicitud');
@@ -24,6 +25,31 @@ async function request(endpoint, options = {}) {
 
   return data;
 }
+
+async function uploadFile(endpoint, file) {
+  const token = localStorage.getItem('token');
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Error al subir archivo');
+  return data;
+}
+
+// ── Profile ──
+export const profileApi = {
+  getMe: () => request('/api/person/me'),
+  createMe: (data) => request('/api/person/me', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id, data) => request(`/api/person/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  uploadPhoto: (id, file) => uploadFile(`/api/person/${id}/photo`, file),
+  deletePhoto: (id) => request(`/api/person/${id}/photo`, { method: 'DELETE' }),
+};
 
 // ── Auth ──
 export const authApi = {
@@ -97,4 +123,54 @@ export const chatApi = {
   closeConversation: (conversationId) =>
     request(`/api/chat/${conversationId}/close`, { method: 'POST' }),
   getWhatsAppLink: (productId) => request(`/api/chat/whatsapp/${productId}`),
+};
+
+// ── Lookups (cualquier usuario autenticado) ──
+export const lookupApi = {
+  getDocumentTypes: () => request('/api/lookup/document-types'),
+};
+
+// ── Admin ──
+export const adminApi = {
+  // Users
+  createUser: (data) => request('/api/auth/create', { method: 'POST', body: JSON.stringify(data) }),
+  getAllUsers: () => request('/api/person/all'),
+  getUserById: (id) => request(`/api/person/${id}`),
+  updateUser: (id, data) => request(`/api/person/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteUser: (id) => request(`/api/person/${id}`, { method: 'DELETE' }),
+
+  // Roles
+  createRole: (data) => request('/api/role/create', { method: 'POST', body: JSON.stringify(data) }),
+  getAllRoles: () => request('/api/role/all'),
+
+  // Modules
+  createModule: (data) => request('/api/module/create', { method: 'POST', body: JSON.stringify(data) }),
+  getAllModules: () => request('/api/module/all'),
+  getModuleById: (id) => request(`/api/module/${id}`),
+  updateModule: (id, data) => request(`/api/module/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteModule: (id) => request(`/api/module/${id}`, { method: 'DELETE' }),
+
+  // Forms
+  createForm: (data) => request('/api/form/create', { method: 'POST', body: JSON.stringify(data) }),
+  getAllForms: () => request('/api/form/all'),
+  getFormById: (id) => request(`/api/form/${id}`),
+  getFormsByModule: (moduleId) => request(`/api/form/by-module/${moduleId}`),
+  updateForm: (id, data) => request(`/api/form/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteForm: (id) => request(`/api/form/${id}`, { method: 'DELETE' }),
+
+  // Actions
+  createAction: (data) => request('/api/action/create', { method: 'POST', body: JSON.stringify(data) }),
+  getAllActions: () => request('/api/action/all'),
+
+  // Admin Users (detailed)
+  getAllUsersDetailed: () => request('/api/admin/users'),
+  changePassword: (userId, data) => request(`/api/admin/users/${userId}/password`, { method: 'PUT', body: JSON.stringify(data) }),
+  updateUserRoles: (userId, data) => request(`/api/admin/users/${userId}/roles`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Document Types
+  createDocType: (data) => request('/api/document-type/create', { method: 'POST', body: JSON.stringify(data) }),
+  getAllDocTypes: () => request('/api/document-type/all'),
+  getDocTypeById: (id) => request(`/api/document-type/${id}`),
+  updateDocType: (id, data) => request(`/api/document-type/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteDocType: (id) => request(`/api/document-type/${id}`, { method: 'DELETE' }),
 };

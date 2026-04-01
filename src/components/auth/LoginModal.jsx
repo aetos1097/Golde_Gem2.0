@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { alertError } from '../../utils/alerts';
 
 export default function LoginModal({ onClose, onSwitchToRegister }) {
   const { login } = useAuth();
@@ -16,7 +17,7 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
       await login(identifier, password);
       onClose();
     } catch (err) {
-      setError(err.message || 'Error al iniciar sesion');
+      alertError('Error', err.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }

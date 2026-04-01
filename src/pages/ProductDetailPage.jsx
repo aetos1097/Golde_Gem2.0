@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productApi, chatApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { alertError } from '../utils/alerts';
 
 function formatPrice(price) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(price);
@@ -35,7 +36,7 @@ export default function ProductDetailPage({ onLoginClick }) {
       const res = await chatApi.startConversation(product.id);
       navigate(`/chat/${res.data.id}`);
     } catch (err) {
-      alert(err.message || 'Error al iniciar conversacion');
+      alertError('Error', err.message || 'Error al iniciar conversacion');
     } finally {
       setStartingChat(false);
     }
@@ -46,7 +47,7 @@ export default function ProductDetailPage({ onLoginClick }) {
       const res = await chatApi.getWhatsAppLink(product.id);
       window.open(res.data, '_blank');
     } catch {
-      alert('Error al generar enlace de WhatsApp');
+      alertError('Error', 'Error al generar enlace de WhatsApp');
     }
   };
 

@@ -1,21 +1,31 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import { profileApi } from '../../api/client';
 
 export default function Navbar({ onLoginClick, onRegisterClick }) {
   const { toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!user) { setPhotoUrl(null); return; }
+    profileApi.getMe()
+      .then((res) => setPhotoUrl(res.data?.photoUrl || null))
+      .catch(() => setPhotoUrl(null));
+  }, [user, location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -40,6 +50,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
           <Link to="/" className="nav-link text-sm">Inicio</Link>
           <Link to="/productos" className="nav-link text-sm">Productos</Link>
           {user && <Link to="/chat" className="nav-link text-sm">Mis Chats</Link>}
+          {isAdmin && <Link to="/admin" className="nav-link text-sm">Admin</Link>}
         </div>
 
         {/* Right: Icons + Toggle */}
@@ -51,15 +62,27 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 p-2 rounded-full hover:bg-black/5 transition"
               >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-mid to-emerald-dark flex items-center justify-center text-gold-light text-sm font-bold">
-                  {user.username?.[0]?.toUpperCase() || 'U'}
-                </div>
+                {photoUrl ? (
+                  <img src={photoUrl} alt="avatar" className="w-8 h-8 rounded-full object-cover border-2" style={{ borderColor: 'var(--gold)' }} />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-mid to-emerald-dark flex items-center justify-center text-gold-light text-sm font-bold">
+                    {user.username?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                )}
                 <span className="hidden md:block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                   {user.username}
                 </span>
               </button>
               {userMenuOpen && (
                 <div className="absolute right-0 top-12 w-48 rounded-xl shadow-lg border py-2" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
+                  <Link
+                    to="/perfil"
+                    className="block px-4 py-2 text-sm hover:bg-black/5 transition"
+                    style={{ color: 'var(--text-primary)' }}
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    Mi Perfil
+                  </Link>
                   <Link
                     to="/chat"
                     className="block px-4 py-2 text-sm hover:bg-black/5 transition"
@@ -68,6 +91,16 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                   >
                     Mis Conversaciones
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="block px-4 py-2 text-sm hover:bg-black/5 transition"
+                      style={{ color: 'var(--gold)' }}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Panel Admin
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 transition text-red-500"
@@ -120,6 +153,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
         <Link to="/" className="nav-link text-lg" onClick={() => setMobileOpen(false)}>Inicio</Link>
         <Link to="/productos" className="nav-link text-lg" onClick={() => setMobileOpen(false)}>Productos</Link>
         {user && <Link to="/chat" className="nav-link text-lg" onClick={() => setMobileOpen(false)}>Mis Chats</Link>}
+        {isAdmin && <Link to="/admin" className="nav-link text-lg" onClick={() => setMobileOpen(false)}>Admin</Link>}
         {!user && (
           <>
             <button onClick={() => { setMobileOpen(false); onLoginClick(); }} className="nav-link text-lg text-left">Ingresar</button>

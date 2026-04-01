@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { alertError, alertSuccess } from '../../utils/alerts';
 
 export default function RegisterModal({ onClose, onSwitchToLogin }) {
   const { register } = useAuth();
@@ -23,11 +24,11 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
     setError('');
 
     if (form.password !== form.confirmPassword) {
-      setError('Las contrasenas no coinciden');
+      alertError('Error', 'Las contraseñas no coinciden');
       return;
     }
     if (form.password.length < 6) {
-      setError('La contrasena debe tener al menos 6 caracteres');
+      alertError('Error', 'La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
@@ -40,9 +41,10 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
         firstName: form.firstName,
         firstLastName: form.firstLastName,
       });
+      await alertSuccess('Cuenta creada', 'Tu cuenta ha sido creada exitosamente');
       onClose();
     } catch (err) {
-      setError(err.message || 'Error al registrarse');
+      alertError('Error', err.message || 'Error al registrarse');
     } finally {
       setLoading(false);
     }
