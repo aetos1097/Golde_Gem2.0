@@ -73,7 +73,7 @@ export default function UsersPage() {
       setItems(usersRes.data || []);
       setRoles(rolesRes.data || []);
       setDocTypes(docTypesRes.data || []);
-    } catch { /* ignore */ }
+    } catch (err) { console.error('Error loading admin users:', err); }
     setLoading(false);
   }, []);
 
