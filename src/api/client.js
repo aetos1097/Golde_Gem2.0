@@ -125,6 +125,43 @@ export const chatApi = {
   getWhatsAppLink: (productId) => request(`/api/chat/whatsapp/${productId}`),
 };
 
+// ── Product Images ──
+export const productImageApi = {
+  getByProduct: (productId) => request(`/api/product/${productId}/images`),
+  upload: (productId, file) => uploadFile(`/api/product/${productId}/images`, file),
+  setPrimary: (productId, imageId) =>
+    request(`/api/product/${productId}/images/${imageId}/primary`, { method: 'PUT' }),
+  delete: (productId, imageId) =>
+    request(`/api/product/${productId}/images/${imageId}`, { method: 'DELETE' }),
+};
+
+// ── Orders ──
+export const orderApi = {
+  create: (data) => request('/api/order/create', { method: 'POST', body: JSON.stringify(data) }),
+  getById: (id) => request(`/api/order/${id}`),
+  getMyOrders: () => request('/api/order/my-orders'),
+  cancel: (id) => request(`/api/order/${id}/cancel`, { method: 'POST' }),
+};
+
+// ── Payments ──
+export const paymentApi = {
+  initiate: (data) => request('/api/payment/initiate', { method: 'POST', body: JSON.stringify(data) }),
+  confirm: (data) => request('/api/payment/confirm', { method: 'POST', body: JSON.stringify(data) }),
+  getByOrder: (orderId) => request(`/api/payment/by-order/${orderId}`),
+};
+
+// ── Preferences ──
+export const preferencesApi = {
+  get: () => request('/api/preferences'),
+  update: (data) => request('/api/preferences', { method: 'PUT', body: JSON.stringify(data) }),
+  delete: () => request('/api/preferences', { method: 'DELETE' }),
+};
+
+// ── Product Types ──
+export const productTypeApi = {
+  getAll: () => request('/api/product-type/all'),
+};
+
 // ── Lookups (cualquier usuario autenticado) ──
 export const lookupApi = {
   getDocumentTypes: () => request('/api/lookup/document-types'),
@@ -173,4 +210,17 @@ export const adminApi = {
   getDocTypeById: (id) => request(`/api/document-type/${id}`),
   updateDocType: (id, data) => request(`/api/document-type/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteDocType: (id) => request(`/api/document-type/${id}`, { method: 'DELETE' }),
+
+  // Regions
+  getAllRegions: () => request('/api/region/all'),
+  getRegionById: (id) => request(`/api/region/${id}`),
+  getDepartments: () => request('/api/region/departments'),
+  getRegionsByDepartment: (department) => request(`/api/region/by-department/${encodeURIComponent(department)}`),
+
+  // Contacts
+  getAllContacts: () => request('/api/contact/all'),
+  createContact: (data) => request('/api/contact/create', { method: 'POST', body: JSON.stringify(data) }),
+  getContactById: (id) => request(`/api/contact/${id}`),
+  updateContact: (id, data) => request(`/api/contact/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteContact: (id) => request(`/api/contact/${id}`, { method: 'DELETE' }),
 };

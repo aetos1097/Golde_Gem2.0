@@ -17,7 +17,11 @@ import ModulesPage from './pages/admin/ModulesPage';
 import FormsPage from './pages/admin/FormsPage';
 import ActionsPage from './pages/admin/ActionsPage';
 import DocumentTypesPage from './pages/admin/DocumentTypesPage';
+import RegionsPage from './pages/admin/RegionsPage';
+import ContactsPage from './pages/admin/ContactsPage';
 import ProfilePage from './pages/ProfilePage';
+import CompanyDashboardPage from './pages/CompanyDashboardPage';
+import OrdersPage from './pages/OrdersPage';
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -42,6 +46,8 @@ export default function App() {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/chat/:conversationId" element={<ChatPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
+        <Route path="/mi-empresa" element={<CompanyDashboardPage />} />
+        <Route path="/mis-ordenes" element={<OrdersPage />} />
 
         {/* Admin Routes */}
         <Route element={<ProtectedRoute requiredRole="Admin" />}>
@@ -53,6 +59,8 @@ export default function App() {
             <Route path="formularios" element={<FormsPage />} />
             <Route path="acciones" element={<ActionsPage />} />
             <Route path="tipos-documento" element={<DocumentTypesPage />} />
+            <Route path="regiones" element={<RegionsPage />} />
+            <Route path="contactos" element={<ContactsPage />} />
           </Route>
         </Route>
       </Routes>

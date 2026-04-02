@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Camera, Save, Trash2, User } from 'lucide-react';
+import { Camera, Save, Trash2, User, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { profileApi, lookupApi } from '../api/client';
+import { profileApi, lookupApi, preferencesApi, companyApi, productTypeApi } from '../api/client';
 import { alertError, toastSuccess } from '../utils/alerts';
 
 export default function ProfilePage() {
@@ -23,6 +23,15 @@ export default function ProfilePage() {
     documentTypeId: '',
   });
 
+  const [companies, setCompanies] = useState([]);
+  const [productTypes, setProductTypes] = useState([]);
+  const [prefs, setPrefs] = useState({
+    preferredCompanyId: '',
+    preferredCategories: [],
+    showAllCompanies: true,
+  });
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
   useEffect(() => {
     const load = async () => {
       const dtRes = await lookupApi.getDocumentTypes().catch(() => ({ data: [] }));
@@ -43,6 +52,21 @@ export default function ProfilePage() {
       } catch {
         // Person doesn't exist yet — show empty form to create
       }
+      const [compRes, ptRes, prefRes] = await Promise.all([
+        companyApi.getAll().catch(() => ({ data: [] })),
+        productTypeApi.getAll().catch(() => ({ data: [] })),
+        preferencesApi.get().catch(() => ({ data: null })),
+      ]);
+      setCompanies(compRes.data || []);
+      setProductTypes(ptRes.data || []);
+      if (prefRes.data) {
+        setPrefs({
+          preferredCompanyId: prefRes.data.preferredCompanyId || '',
+          preferredCategories: prefRes.data.preferredCategories || [],
+          showAllCompanies: prefRes.data.showAllCompanies ?? true,
+        });
+      }
+
       setLoading(false);
     };
     load();
@@ -112,6 +136,32 @@ export default function ProfilePage() {
       alertError('Error', err.message || 'Error al eliminar la foto');
     }
     setUploading(false);
+  };
+
+  const handleCategoryToggle = (id) => {
+    setPrefs((prev) => ({
+      ...prev,
+      preferredCategories: prev.preferredCategories.includes(id)
+        ? prev.preferredCategories.filter((c) => c !== id)
+        : [...prev.preferredCategories, id],
+    }));
+  };
+
+  const handleSavePrefs = async (e) => {
+    e.preventDefault();
+    setSavingPrefs(true);
+    try {
+      const payload = {
+        preferredCompanyId: prefs.preferredCompanyId || null,
+        preferredCategories: prefs.preferredCategories,
+        showAllCompanies: prefs.showAllCompanies,
+      };
+      const res = await preferencesApi.update(payload);
+      if (res.success) toastSuccess('Preferencias actualizadas');
+    } catch (err) {
+      alertError('Error', err.message || 'Error al guardar preferencias');
+    }
+    setSavingPrefs(false);
   };
 
   if (loading) {
@@ -264,6 +314,78 @@ export default function ProfilePage() {
             {saving ? 'Guardando...' : person ? 'Guardar Cambios' : 'Crear Perfil'}
           </button>
         </form>
+
+        {/* Preferences Section */}
+        {person && (
+          <form onSubmit={handleSavePrefs} className="rounded-2xl p-8 border space-y-5 mt-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <Settings size={20} style={{ color: 'var(--gold)' }} />
+              <h2 className="font-display text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Preferencias</h2>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+                Empresa preferida
+              </label>
+              <select
+                value={prefs.preferredCompanyId}
+                onChange={(e) => setPrefs((p) => ({ ...p, preferredCompanyId: e.target.value }))}
+                className="form-input"
+              >
+                <option value="">Todas las empresas</option>
+                {companies.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Categorias de interes
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {productTypes.map((pt) => (
+                  <button
+                    key={pt.id}
+                    type="button"
+                    onClick={() => handleCategoryToggle(pt.id)}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium border transition"
+                    style={{
+                      background: prefs.preferredCategories.includes(pt.id) ? 'var(--gold)' : 'transparent',
+                      color: prefs.preferredCategories.includes(pt.id) ? '#1a1a1a' : 'var(--text-secondary)',
+                      borderColor: prefs.preferredCategories.includes(pt.id) ? 'var(--gold)' : 'var(--border)',
+                    }}
+                  >
+                    {pt.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={prefs.showAllCompanies}
+                onChange={(e) => setPrefs((p) => ({ ...p, showAllCompanies: e.target.checked }))}
+                className="w-4 h-4 rounded"
+                style={{ accentColor: 'var(--gold)' }}
+              />
+              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Mostrar productos de todas las empresas
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              disabled={savingPrefs}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm tracking-wide uppercase transition disabled:opacity-50 hover:opacity-90"
+              style={{ background: 'var(--color-gold-bright)', color: '#1a1a1a' }}
+            >
+              <Save size={16} />
+              {savingPrefs ? 'Guardando...' : 'Guardar Preferencias'}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

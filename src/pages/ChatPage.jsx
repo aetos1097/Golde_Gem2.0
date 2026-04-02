@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { chatApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useSignalR } from '../hooks/useSignalR';
 import { alertError } from '../utils/alerts';
 
 function formatPrice(price) {
@@ -69,26 +70,17 @@ function ConversationList({ conversations, activeId, onSelect }) {
 }
 
 // ── Chat Window ──
-function ChatWindow({ conversationId, userId }) {
+function ChatWindow({ conversationId, userId, signalR }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
   const [showOffer, setShowOffer] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [typingUser, setTypingUser] = useState(null);
   const messagesEndRef = useRef(null);
+  const typingTimeout = useRef(null);
 
-  useEffect(() => {
-    if (!conversationId) return;
-    loadMessages();
-    const interval = setInterval(loadMessages, 5000);
-    return () => clearInterval(interval);
-  }, [conversationId]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     try {
       const res = await chatApi.getMessages(conversationId);
       setMessages(res.data || []);
@@ -97,15 +89,62 @@ function ChatWindow({ conversationId, userId }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [conversationId]);
+
+  // Join/leave conversation group and listen for real-time messages
+  useEffect(() => {
+    if (!conversationId) return;
+    setLoading(true);
+    loadMessages();
+
+    if (signalR.connected) {
+      signalR.joinConversation(conversationId);
+    }
+
+    return () => {
+      if (signalR.connected) {
+        signalR.leaveConversation(conversationId);
+      }
+    };
+  }, [conversationId, signalR.connected, loadMessages]);
+
+  // Listen for real-time events
+  useEffect(() => {
+    if (!signalR.connected) return;
+
+    const offMessage = signalR.on('ReceiveMessage', (msg) => {
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === msg.id)) return prev;
+        return [...prev, msg];
+      });
+    });
+
+    const offTyping = signalR.on('UserTyping', (uid) => {
+      if (uid !== userId) {
+        setTypingUser(uid);
+        clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => setTypingUser(null), 3000);
+      }
+    });
+
+    return () => { offMessage?.(); offTyping?.(); };
+  }, [signalR.connected, signalR.on, userId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
     try {
-      await chatApi.sendMessage(conversationId, newMessage);
+      if (signalR.connected) {
+        await signalR.sendMessage(conversationId, newMessage);
+      } else {
+        await chatApi.sendMessage(conversationId, newMessage);
+        loadMessages();
+      }
       setNewMessage('');
-      loadMessages();
     } catch (err) {
       alertError('Error', err.message);
     }
@@ -116,10 +155,14 @@ function ChatWindow({ conversationId, userId }) {
     const price = parseFloat(offerPrice);
     if (!price || price <= 0) return;
     try {
-      await chatApi.offerPrice(conversationId, price);
+      if (signalR.connected) {
+        await signalR.sendPriceOffer(conversationId, price);
+      } else {
+        await chatApi.offerPrice(conversationId, price);
+        loadMessages();
+      }
       setOfferPrice('');
       setShowOffer(false);
-      loadMessages();
     } catch (err) {
       alertError('Error', err.message);
     }
@@ -127,7 +170,11 @@ function ChatWindow({ conversationId, userId }) {
 
   const handleAccept = async () => {
     try {
-      await chatApi.acceptPrice(conversationId);
+      if (signalR.connected) {
+        await signalR.acceptPrice(conversationId);
+      } else {
+        await chatApi.acceptPrice(conversationId);
+      }
       loadMessages();
     } catch (err) {
       alertError('Error', err.message);
@@ -136,10 +183,21 @@ function ChatWindow({ conversationId, userId }) {
 
   const handleReject = async () => {
     try {
-      await chatApi.rejectPrice(conversationId);
+      if (signalR.connected) {
+        await signalR.rejectPrice(conversationId);
+      } else {
+        await chatApi.rejectPrice(conversationId);
+      }
       loadMessages();
     } catch (err) {
       alertError('Error', err.message);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setNewMessage(e.target.value);
+    if (signalR.connected) {
+      signalR.sendTyping(conversationId);
     }
   };
 
@@ -207,6 +265,13 @@ function ChatWindow({ conversationId, userId }) {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Typing indicator */}
+      {typingUser && (
+        <div className="px-6 py-1">
+          <span className="text-xs italic" style={{ color: 'var(--text-muted)' }}>Escribiendo...</span>
+        </div>
+      )}
+
       {/* Input */}
       <div className="p-4 border-t" style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)' }}>
         {showOffer ? (
@@ -233,7 +298,7 @@ function ChatWindow({ conversationId, userId }) {
               className="form-input flex-1"
               placeholder="Escribe un mensaje..."
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={handleInputChange}
             />
             <button
               type="button"
@@ -264,6 +329,7 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const { conversationId } = useParams();
   const [conversations, setConversations] = useState([]);
+  const signalR = useSignalR();
 
   useEffect(() => {
     if (!user) {
@@ -284,10 +350,14 @@ export default function ChatPage() {
       {/* Sidebar */}
       <div className="w-80 border-r flex-shrink-0 hidden md:block" style={{ borderColor: 'var(--border)' }}>
         <ConversationList conversations={conversations} activeId={conversationId} onSelect={handleSelect} />
+        <div className="px-4 py-2 border-t text-xs flex items-center gap-2" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+          <span className="w-2 h-2 rounded-full" style={{ background: signalR.connected ? '#22c55e' : '#ef4444' }} />
+          {signalR.connected ? 'Conectado' : 'Sin conexion'}
+        </div>
       </div>
 
       {/* Chat */}
-      <ChatWindow conversationId={conversationId} userId={user?.userId} />
+      <ChatWindow conversationId={conversationId} userId={user?.userId} signalR={signalR} />
     </div>
   );
 }

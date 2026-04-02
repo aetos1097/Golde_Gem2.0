@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { productApi, companyApi } from '../api/client';
+import { productApi, companyApi, preferencesApi, productTypeApi } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import ProductCard from '../components/products/ProductCard';
 import { useReveal } from '../hooks/useReveal';
 
@@ -15,18 +16,47 @@ const fallbackProducts = [
 ];
 
 export default function ProductsPage() {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState('');
+  const [productTypes, setProductTypes] = useState([]);
+  const [selectedType, setSelectedType] = useState('');
+  const [personalizedLabel, setPersonalizedLabel] = useState('');
   const revealRef = useReveal();
 
   useEffect(() => {
-    loadProducts();
-    companyApi.getAll()
-      .then((res) => setCompanies(res.data || []))
-      .catch(() => {});
+    const init = async () => {
+      const [compRes, ptRes] = await Promise.all([
+        companyApi.getAll().catch(() => ({ data: [] })),
+        productTypeApi.getAll().catch(() => ({ data: [] })),
+      ]);
+      setCompanies(compRes.data || []);
+      setProductTypes(ptRes.data || []);
+
+      // Apply user preferences if logged in
+      if (user) {
+        try {
+          const prefRes = await preferencesApi.get();
+          const prefs = prefRes.data;
+          if (prefs) {
+            if (prefs.preferredCompanyId && !prefs.showAllCompanies) {
+              setSelectedCompany(prefs.preferredCompanyId);
+              setPersonalizedLabel('Mostrando tu empresa preferida');
+            }
+            if (prefs.preferredCategories?.length === 1) {
+              setSelectedType(prefs.preferredCategories[0]);
+              setPersonalizedLabel((prev) => prev ? prev + ' y categoria' : 'Mostrando tu categoria preferida');
+            }
+          }
+        } catch { /* no preferences set */ }
+      }
+
+      loadProducts();
+    };
+    init();
   }, []);
 
   const loadProducts = async (query = '') => {
@@ -41,8 +71,27 @@ export default function ProductsPage() {
     }
   };
 
+  const loadByType = async (typeId) => {
+    setSelectedType(typeId);
+    setPersonalizedLabel('');
+    if (!typeId) {
+      loadProducts(search);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await productApi.getByType(typeId);
+      setProducts(res.data || []);
+    } catch {
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadByCompany = async (companyId) => {
     setSelectedCompany(companyId);
+    setPersonalizedLabel('');
     if (!companyId) {
       loadProducts(search);
       return;
@@ -89,7 +138,7 @@ export default function ProductsPage() {
 
           {companies.length > 0 && (
             <select
-              className="form-input w-full md:w-56"
+              className="form-input w-full md:w-48"
               value={selectedCompany}
               onChange={(e) => loadByCompany(e.target.value)}
             >
@@ -99,7 +148,26 @@ export default function ProductsPage() {
               ))}
             </select>
           )}
+
+          {productTypes.length > 0 && (
+            <select
+              className="form-input w-full md:w-48"
+              value={selectedType}
+              onChange={(e) => { setSelectedType(e.target.value); loadByType(e.target.value); }}
+            >
+              <option value="">Todas las categorias</option>
+              {productTypes.map((pt) => (
+                <option key={pt.id} value={pt.id}>{pt.name}</option>
+              ))}
+            </select>
+          )}
         </div>
+
+        {personalizedLabel && (
+          <div className="flex items-center gap-2 mb-6 px-4 py-2 rounded-xl text-sm" style={{ background: 'rgba(212,164,40,0.1)', color: 'var(--gold)' }}>
+            <span>&#9733;</span> {personalizedLabel} — <button onClick={() => { setSelectedCompany(''); setSelectedType(''); setPersonalizedLabel(''); loadProducts(); }} className="underline">ver todo</button>
+          </div>
+        )}
 
         {/* Products Grid */}
         {loading ? (

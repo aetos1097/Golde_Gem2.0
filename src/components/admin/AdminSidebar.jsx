@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Shield, LayoutGrid, FileText, Zap, FileType, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { LayoutDashboard, Users, Shield, LayoutGrid, FileText, Zap, FileType, MapPin, Phone, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const links = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -9,6 +9,8 @@ const links = [
   { to: '/admin/formularios', icon: FileText, label: 'Formularios' },
   { to: '/admin/acciones', icon: Zap, label: 'Acciones' },
   { to: '/admin/tipos-documento', icon: FileType, label: 'Tipos Documento' },
+  { to: '/admin/regiones', icon: MapPin, label: 'Regiones' },
+  { to: '/admin/contactos', icon: Phone, label: 'Contactos' },
 ];
 
 export default function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
