@@ -167,6 +167,18 @@ export const lookupApi = {
   getDocumentTypes: () => request('/api/lookup/document-types'),
 };
 
+// ── Departments & Municipalities ──
+export const departmentApi = {
+  getAll: () => request('/api/department/all'),
+  getById: (id) => request(`/api/department/${id}`),
+};
+
+export const municipalityApi = {
+  getAll: () => request('/api/municipality/all'),
+  getById: (id) => request(`/api/municipality/${id}`),
+  getByDepartmentId: (departmentId) => request(`/api/municipality/by-department/${departmentId}`),
+};
+
 // ── Admin ──
 export const adminApi = {
   // Users
@@ -211,11 +223,12 @@ export const adminApi = {
   updateDocType: (id, data) => request(`/api/document-type/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteDocType: (id) => request(`/api/document-type/${id}`, { method: 'DELETE' }),
 
-  // Regions
-  getAllRegions: () => request('/api/region/all'),
-  getRegionById: (id) => request(`/api/region/${id}`),
-  getDepartments: () => request('/api/region/departments'),
-  getRegionsByDepartment: (department) => request(`/api/region/by-department/${encodeURIComponent(department)}`),
+  // Departments & Municipalities
+  getAllDepartments: () => request('/api/department/all'),
+  getDepartmentById: (id) => request(`/api/department/${id}`),
+  getAllMunicipalities: () => request('/api/municipality/all'),
+  getMunicipalityById: (id) => request(`/api/municipality/${id}`),
+  getMunicipalitiesByDepartment: (departmentId) => request(`/api/municipality/by-department/${departmentId}`),
 
   // Contacts
   getAllContacts: () => request('/api/contact/all'),

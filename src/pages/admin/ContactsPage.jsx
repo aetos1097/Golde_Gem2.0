@@ -22,7 +22,7 @@ export default function ContactsPage() {
   const [editing, setEditing] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState('');
-  const [regions, setRegions] = useState([]);
+  const [municipalities, setMunicipalities] = useState([]);
 
   const fields = [
     { name: 'mobile', label: 'Celular', type: 'text', required: true, placeholder: '3001234567' },
@@ -30,12 +30,12 @@ export default function ContactsPage() {
     { name: 'address', label: 'Dirección', type: 'text', placeholder: 'Cra 10 #20-30' },
     { name: 'neighborhood', label: 'Barrio', type: 'text', placeholder: 'Centro' },
     {
-      name: 'regionId',
-      label: 'Región',
+      name: 'municipalityId',
+      label: 'Municipio',
       type: 'select',
       options: [
-        { value: '', label: 'Sin región' },
-        ...regions.map((r) => ({ value: r.id, label: `${r.department} - ${r.municipalityName}` })),
+        { value: '', label: 'Sin municipio' },
+        ...municipalities.map((m) => ({ value: m.id, label: `${m.departmentName} - ${m.name}` })),
       ],
     },
   ];
@@ -43,12 +43,12 @@ export default function ContactsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [contactsRes, regionsRes] = await Promise.all([
+      const [contactsRes, munisRes] = await Promise.all([
         adminApi.getAllContacts(),
-        adminApi.getAllRegions(),
+        adminApi.getAllMunicipalities(),
       ]);
       setItems(contactsRes.data || []);
-      setRegions(regionsRes.data || []);
+      setMunicipalities(munisRes.data || []);
     } catch { /* ignore */ }
     setLoading(false);
   }, []);
@@ -60,7 +60,7 @@ export default function ContactsPage() {
     setFormError('');
     try {
       const payload = { ...values };
-      if (!payload.regionId) delete payload.regionId;
+      if (!payload.municipalityId) delete payload.municipalityId;
       if (editing) {
         await adminApi.updateContact(editing.id, payload);
       } else {

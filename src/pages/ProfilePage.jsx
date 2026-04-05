@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Camera, Save, Trash2, User, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { profileApi, lookupApi, preferencesApi, companyApi, productTypeApi } from '../api/client';
+import { profileApi, lookupApi, preferencesApi, companyApi, productTypeApi, municipalityApi } from '../api/client';
 import { alertError, toastSuccess } from '../utils/alerts';
 
 export default function ProfilePage() {
@@ -10,6 +10,7 @@ export default function ProfilePage() {
 
   const [person, setPerson] = useState(null);
   const [docTypes, setDocTypes] = useState([]);
+  const [municipalities, setMunicipalities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -21,6 +22,11 @@ export default function ProfilePage() {
     secondLastName: '',
     documentNumber: '',
     documentTypeId: '',
+    mobile: '',
+    email: '',
+    address: '',
+    neighborhood: '',
+    municipalityId: '',
   });
 
   const [companies, setCompanies] = useState([]);
@@ -34,8 +40,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const load = async () => {
-      const dtRes = await lookupApi.getDocumentTypes().catch(() => ({ data: [] }));
+      const [dtRes, muniRes] = await Promise.all([
+        lookupApi.getDocumentTypes().catch(() => ({ data: [] })),
+        municipalityApi.getAll().catch(() => ({ data: [] })),
+      ]);
       setDocTypes(dtRes.data || []);
+      setMunicipalities(muniRes.data || []);
       try {
         const meRes = await profileApi.getMe();
         if (meRes.success && meRes.data) {
@@ -47,6 +57,11 @@ export default function ProfilePage() {
             secondLastName: meRes.data.secondLastName || '',
             documentNumber: meRes.data.documentNumber || '',
             documentTypeId: meRes.data.documentTypeId || '',
+            mobile: meRes.data.mobile || '',
+            email: meRes.data.email || '',
+            address: meRes.data.address || '',
+            neighborhood: meRes.data.neighborhood || '',
+            municipalityId: meRes.data.municipalityId || '',
           });
         }
       } catch {
@@ -266,9 +281,9 @@ export default function ProfilePage() {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                Segundo Nombre
+                Segundo Nombre <span className="text-red-500">*</span>
               </label>
-              <input name="secondName" value={form.secondName} onChange={handleChange} className="form-input" />
+              <input name="secondName" value={form.secondName} onChange={handleChange} required className="form-input" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
@@ -278,18 +293,18 @@ export default function ProfilePage() {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                Segundo Apellido
+                Segundo Apellido <span className="text-red-500">*</span>
               </label>
-              <input name="secondLastName" value={form.secondLastName} onChange={handleChange} className="form-input" />
+              <input name="secondLastName" value={form.secondLastName} onChange={handleChange} required className="form-input" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                Tipo de Documento
+                Tipo de Documento <span className="text-red-500">*</span>
               </label>
-              <select name="documentTypeId" value={form.documentTypeId} onChange={handleChange} className="form-input">
+              <select name="documentTypeId" value={form.documentTypeId} onChange={handleChange} required className="form-input">
                 <option value="">Seleccionar...</option>
                 {docTypes.map((dt) => (
                   <option key={dt.id} value={dt.id}>{dt.code} - {dt.name}</option>
@@ -298,9 +313,83 @@ export default function ProfilePage() {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                Numero de Documento
+                Numero de Documento <span className="text-red-500">*</span>
               </label>
-              <input name="documentNumber" value={form.documentNumber} onChange={handleChange} className="form-input" />
+              <input name="documentNumber" value={form.documentNumber} onChange={handleChange} required className="form-input" />
+            </div>
+          </div>
+
+          <h2 className="font-display text-lg font-bold mb-2 pt-4 border-t" style={{ color: 'var(--text-primary)', borderColor: 'var(--border)' }}>Datos de Contacto</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+                Celular <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="mobile"
+                type="tel"
+                value={form.mobile}
+                onChange={handleChange}
+                required
+                maxLength={20}
+                className="form-input"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                maxLength={200}
+                className="form-input"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+              Dirección <span className="text-red-500">*</span>
+            </label>
+            <input
+              name="address"
+              value={form.address}
+              onChange={handleChange}
+              required
+              maxLength={300}
+              className="form-input"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+                Barrio <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="neighborhood"
+                value={form.neighborhood}
+                onChange={handleChange}
+                required
+                maxLength={200}
+                className="form-input"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+                Municipio <span className="text-red-500">*</span>
+              </label>
+              <select name="municipalityId" value={form.municipalityId} onChange={handleChange} required className="form-input">
+                <option value="">Seleccionar...</option>
+                {municipalities.map((m) => (
+                  <option key={m.id} value={m.id}>{m.departmentName} - {m.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 
