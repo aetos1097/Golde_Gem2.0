@@ -86,6 +86,7 @@ export default function CompanyDashboardPage() {
       toastSuccess(editing ? 'Producto actualizado' : 'Producto creado');
     } catch (err) {
       setFormError(err.message);
+      alertError('Error', err.message || 'Ocurrió un error');
     }
     setFormLoading(false);
   };

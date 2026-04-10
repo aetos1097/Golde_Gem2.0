@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import SearchableSelect from './SearchableSelect';
 
 export default function FormModal({ isOpen, onClose, title, fields, initialValues = {}, onSubmit, loading, error }) {
   const [values, setValues] = useState({});
 
+  // Resetear valores SOLO al abrir el modal. No depender de `fields` ni `initialValues`
+  // porque esas referencias cambian en cada render del padre y borrarían lo que el
+  // usuario ya escribió (por ejemplo, cuando aparece un error de validación).
   useEffect(() => {
     if (isOpen) {
       const defaults = {};
       fields.forEach((f) => { defaults[f.name] = initialValues[f.name] ?? ''; });
       setValues(defaults);
     }
-  }, [isOpen, initialValues, fields]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -67,6 +72,15 @@ export default function FormModal({ isOpen, onClose, title, fields, initialValue
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
+              ) : field.type === 'searchable-select' ? (
+                <SearchableSelect
+                  options={field.options || []}
+                  value={values[field.name] || ''}
+                  onChange={(v) => handleChange(field.name, v)}
+                  placeholder={field.placeholder || 'Buscar...'}
+                  required={field.required}
+                  isClearable={!field.required}
+                />
               ) : field.type === 'multicheck' ? (
                 <div className="flex flex-wrap gap-2 mt-1">
                   {field.options?.map((opt) => {

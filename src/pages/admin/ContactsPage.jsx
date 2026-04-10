@@ -32,11 +32,9 @@ export default function ContactsPage() {
     {
       name: 'municipalityId',
       label: 'Municipio',
-      type: 'select',
-      options: [
-        { value: '', label: 'Sin municipio' },
-        ...municipalities.map((m) => ({ value: m.id, label: `${m.departmentName} - ${m.name}` })),
-      ],
+      type: 'searchable-select',
+      placeholder: 'Buscar municipio...',
+      options: municipalities.map((m) => ({ value: m.id, label: `${m.departmentName} - ${m.name}` })),
     },
   ];
 
@@ -72,6 +70,7 @@ export default function ContactsPage() {
       toastSuccess(editing ? 'Contacto actualizado' : 'Contacto creado');
     } catch (err) {
       setFormError(err.message);
+      alertError('Error', err.message || 'Ocurrió un error');
     }
     setFormLoading(false);
   };

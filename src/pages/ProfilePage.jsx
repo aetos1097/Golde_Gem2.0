@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Camera, Save, Trash2, User, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { profileApi, lookupApi, preferencesApi, companyApi, productTypeApi, municipalityApi } from '../api/client';
+import SearchableSelect from '../components/admin/SearchableSelect';
 import { alertError, toastSuccess } from '../utils/alerts';
 
 export default function ProfilePage() {
@@ -384,12 +385,14 @@ export default function ProfilePage() {
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
                 Municipio <span className="text-red-500">*</span>
               </label>
-              <select name="municipalityId" value={form.municipalityId} onChange={handleChange} required className="form-input">
-                <option value="">Seleccionar...</option>
-                {municipalities.map((m) => (
-                  <option key={m.id} value={m.id}>{m.departmentName} - {m.name}</option>
-                ))}
-              </select>
+              <SearchableSelect
+                options={municipalities.map((m) => ({ value: m.id, label: `${m.departmentName} - ${m.name}` }))}
+                value={form.municipalityId}
+                onChange={(v) => setForm((prev) => ({ ...prev, municipalityId: v }))}
+                placeholder="Buscar municipio..."
+                required
+                isClearable={false}
+              />
             </div>
           </div>
 

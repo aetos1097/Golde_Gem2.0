@@ -31,6 +31,15 @@ Genera soluciones, código y sugerencias basándote **EXCLUSIVAMENTE** en las si
 - Las importaciones de variables de entorno deben usar `import.meta.env`.
 - Respeta la configuración existente en `vite.config.js`.
 
+### react-select 5
+- Librería estándar del proyecto para **selects con búsqueda/filtro** (listas largas: municipios, productos, empresas, etc.).
+- **NO usar `<select>` nativo** cuando el listado tenga más de ~15 opciones. Usar el wrapper `SearchableSelect` del proyecto.
+- Para selects cortos (≤15 opciones, ej. tipos de documento) sí se permite `<select>` nativo.
+
+### SweetAlert2
+- Librería **OBLIGATORIA** para toda notificación, confirmación y alerta de la app. NUNCA usar `window.alert`, `window.confirm`, `window.prompt` ni `<Toast>` o banners custom.
+- Siempre importar desde el wrapper del proyecto `src/utils/alerts.js` (respeta el tema oscuro/claro y usa el color dorado de la marca). NO importar `sweetalert2` directamente en los componentes.
+
 ## Estructura del Proyecto
 
 ```
@@ -110,7 +119,135 @@ Golde_Gem2.0/
 - Entrega código refactorizado, limpio y listo para implementar.
 - Cuando crees archivos nuevos, indica la ruta exacta donde deben ubicarse.
 
-### Enfoque de Marca Premium
+## Componentes Reutilizables del Proyecto
+
+### `AdminTable` (`src/components/admin/AdminTable.jsx`)
+Tabla estándar del panel admin con paginación y búsqueda incluidas.
+
+**Props**:
+- `columns`: `[{ key, label, render? }]` — `render` recibe la row y devuelve JSX
+- `data`: array de filas
+- `loading`: boolean (muestra skeleton)
+- `onEdit`, `onDelete`, `onView`: callbacks opcionales (agregan columna de acciones)
+- `paginated` (default `true`), `defaultPageSize` (default `10`), `pageSizes` (default `[10,25,50,100]`)
+- `searchable` (default `true`), `searchPlaceholder`
+- `emptyMessage`
+
+**Reglas**:
+- SIEMPRE usar `AdminTable` para listar datos en el panel admin (jamás `<table>` crudo).
+- Si el dataset puede superar ~20 filas, dejar `paginated` activo (default).
+- El buscador filtra solo columnas SIN `render` (trabaja con valores primitivos). Si una columna usa `render`, no se incluye en la búsqueda — considera exponer el valor buscable en el row antes de pasarlo o agregar una columna auxiliar.
+- Resetea automáticamente a página 1 cuando cambia búsqueda o tamaño de página.
+- Los botones de navegación: « ‹ "Página X de Y" › » más contador "1–10 de N".
+
+### `SearchableSelect` (`src/components/admin/SearchableSelect.jsx`)
+Wrapper sobre `react-select` con el tema visual de GoldenGems (CSS vars).
+
+**Props**:
+- `options`: `[{ value, label }]`
+- `value`: valor primitivo (string/number/array si `isMulti`)
+- `onChange`: `(value) => void` — recibe el value primitivo, NO el objeto option
+- `placeholder` (default "Seleccionar...")
+- `required`, `isClearable` (default `true`), `isDisabled`, `isMulti`
+- `noOptionsMessage` (default "Sin resultados")
+
+**Detalles técnicos**:
+- Renderiza el menú con `menuPortal` → escapa correctamente de modales con overflow.
+- `classNamePrefix="gg-select"` → estilos customizables por CSS si hiciera falta.
+- Incluye input oculto para soportar validación HTML nativa con `required`.
+- No aceptes un `<select>` nativo cuando las opciones vengan de una lista grande o dinámica desde API.
+
+### `FormModal` (`src/components/admin/FormModal.jsx`)
+Modal con formulario declarativo basado en un array de `fields`.
+
+**Tipos de field soportados**:
+- `'text'` / `'email'` / `'password'` / `'number'` / `'date'`
+- `'textarea'`
+- `'select'` → `<select>` nativo (listas cortas)
+- `'searchable-select'` → usa `SearchableSelect` (listas largas)
+- `'multicheck'` → pills seleccionables múltiples
+
+**Uso de `searchable-select`**:
+```jsx
+{
+  name: 'municipalityId',
+  label: 'Municipio',
+  type: 'searchable-select',
+  required: true,
+  placeholder: 'Buscar municipio...',
+  options: municipalities.map((m) => ({ value: m.id, label: `${m.departmentName} - ${m.name}` })),
+}
+```
+
+## Notificaciones y Alertas ( 
+
+**Todas** las notificaciones de la app deben pasar por el wrapper `src/utils/alerts.js`. Nunca uses `alert()`, `confirm()`, banners custom, ni importes `sweetalert2` directamente en componentes.
+
+### API del wrapper
+
+```js
+import {
+  alertSuccess, alertError, alertWarning, alertInfo,
+  alertConfirm, alertConfirmDelete,
+  toastSuccess, toastError,
+} from '../utils/alerts'; // ajusta la ruta
+```
+
+| Función | Tipo | Cuándo usarla |
+|---|---|---|
+| `toastSuccess(title)` | toast auto-cierre (3s) | Éxito no crítico: guardado, actualización, eliminación exitosa |
+| `toastError(title)` | toast auto-cierre | Error rápido sin detalles (ej. fallo de copy-to-clipboard) |
+| `alertSuccess(title, text)` | modal con botón Aceptar | Éxito importante donde quieres que el usuario confirme antes de seguir (ej. "Cuenta creada") |
+| `alertError(title, text)` | modal con botón Aceptar | **Estándar para errores de API/validación**. Siempre pasa `err.message` como `text` |
+| `alertWarning(title, text)` | modal | Advertencias |
+| `alertInfo(title, text)` | modal | Info |
+| `alertConfirm(title, text)` | modal con Cancelar/Confirmar | Confirmación genérica. Revisa `.isConfirmed` |
+| `alertConfirmDelete(title?, text?)` | modal con Cancelar/Eliminar rojo | **Obligatorio antes de CUALQUIER eliminación.** Revisa `.isConfirmed` |
+
+### Patrones obligatorios
+
+**1. Acciones async (crear/actualizar/eliminar)** — toast para éxito, alert para error:
+```jsx
+try {
+  await adminApi.updateUser(id, data);
+  toastSuccess('Usuario actualizado');
+  load();
+} catch (err) {
+  alertError('Error', err.message || 'Error al actualizar');
+}
+```
+
+**2. Antes de eliminar** — siempre pedir confirmación:
+```jsx
+const handleDelete = async (row) => {
+  const result = await alertConfirmDelete(
+    'Confirmar eliminación',
+    `¿Eliminar "${row.name}"?`
+  );
+  if (!result.isConfirmed) return;
+  try {
+    await adminApi.delete(row.id);
+    toastSuccess('Eliminado');
+    load();
+  } catch (err) {
+    alertError('Error', err.message || 'Error al eliminar');
+  }
+};
+```
+
+**3. Errores de formulario dentro de modal** — además del toast/alert, pasa el mensaje al prop `error` del `FormModal` para que se muestre INLINE arriba del form. Los errores críticos usan ambos canales.
+
+**4. Validaciones de UI (no API)** — `alertError` directo, no necesitas toast:
+```jsx
+if (file.size > 5 * 1024 * 1024) {
+  alertError('Error', 'La imagen no puede pesar más de 5MB');
+  return;
+}
+```
+
+**5. Nunca mezcles fuentes** — si ya usas `alertError` en el catch, no agregues un `setError(err.message)` redundante.
+
+## Enfoque de Marca Premium
 - La UI debe reflejar una marca **premium y de lujo** (joyería de oro y esmeraldas).
 - Paleta orientada a dorados, verdes esmeralda, negros y blancos elegantes.
 - Tipografías serif para headings, sans-serif para body.

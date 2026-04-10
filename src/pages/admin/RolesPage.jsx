@@ -4,7 +4,7 @@ import { adminApi } from '../../api/client';
 import AdminTable from '../../components/admin/AdminTable';
 import FormModal from '../../components/admin/FormModal';
 import StatusBadge from '../../components/admin/StatusBadge';
-import { toastSuccess } from '../../utils/alerts';
+import { toastSuccess, alertError } from '../../utils/alerts';
 
 const fields = [
   { name: 'name', label: 'Nombre', type: 'text', required: true, placeholder: 'Admin' },
@@ -46,6 +46,7 @@ export default function RolesPage() {
       toastSuccess('Rol creado');
     } catch (err) {
       setFormError(err.message);
+      alertError('Error', err.message || 'Ocurrió un error');
     }
     setFormLoading(false);
   };

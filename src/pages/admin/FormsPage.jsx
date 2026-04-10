@@ -62,6 +62,7 @@ export default function FormsPage() {
       toastSuccess(editing ? 'Formulario actualizado' : 'Formulario creado');
     } catch (err) {
       setFormError(err.message);
+      alertError('Error', err.message || 'Ocurrió un error');
     }
     setFormLoading(false);
   };

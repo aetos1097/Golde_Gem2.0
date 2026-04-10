@@ -52,6 +52,7 @@ export default function DocumentTypesPage() {
       toastSuccess(editing ? 'Tipo actualizado' : 'Tipo creado');
     } catch (err) {
       setFormError(err.message);
+      alertError('Error', err.message || 'Ocurrió un error');
     }
     setFormLoading(false);
   };

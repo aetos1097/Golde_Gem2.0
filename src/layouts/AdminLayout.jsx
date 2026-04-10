@@ -11,6 +11,8 @@ const titles = {
   '/admin/formularios': 'Formularios',
   '/admin/acciones': 'Acciones',
   '/admin/tipos-documento': 'Tipos de Documento',
+  '/admin/empresas': 'Empresas',
+  '/admin/productos': 'Productos',
 };
 
 export default function AdminLayout() {

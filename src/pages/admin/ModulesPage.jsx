@@ -57,6 +57,7 @@ export default function ModulesPage() {
       toastSuccess(editing ? 'Módulo actualizado' : 'Módulo creado');
     } catch (err) {
       setFormError(err.message);
+      alertError('Error', err.message || 'Ocurrió un error');
     }
     setFormLoading(false);
   };

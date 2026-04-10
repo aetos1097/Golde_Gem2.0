@@ -12,6 +12,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import ChatPage from './pages/ChatPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UsersPage from './pages/admin/UsersPage';
+import PeoplePage from './pages/admin/PeoplePage';
 import RolesPage from './pages/admin/RolesPage';
 import ModulesPage from './pages/admin/ModulesPage';
 import FormsPage from './pages/admin/FormsPage';
@@ -19,6 +20,8 @@ import ActionsPage from './pages/admin/ActionsPage';
 import DocumentTypesPage from './pages/admin/DocumentTypesPage';
 import RegionsPage from './pages/admin/RegionsPage';
 import ContactsPage from './pages/admin/ContactsPage';
+import CompaniesPage from './pages/admin/CompaniesPage';
+import AdminProductsPage from './pages/admin/AdminProductsPage';
 import ProfilePage from './pages/ProfilePage';
 import CompanyDashboardPage from './pages/CompanyDashboardPage';
 import OrdersPage from './pages/OrdersPage';
@@ -54,6 +57,7 @@ export default function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="usuarios" element={<UsersPage />} />
+            <Route path="personas" element={<PeoplePage />} />
             <Route path="roles" element={<RolesPage />} />
             <Route path="modulos" element={<ModulesPage />} />
             <Route path="formularios" element={<FormsPage />} />
@@ -61,6 +65,8 @@ export default function App() {
             <Route path="tipos-documento" element={<DocumentTypesPage />} />
             <Route path="regiones" element={<RegionsPage />} />
             <Route path="contactos" element={<ContactsPage />} />
+            <Route path="empresas" element={<CompaniesPage />} />
+            <Route path="productos" element={<AdminProductsPage />} />
           </Route>
         </Route>
       </Routes>

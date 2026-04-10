@@ -20,7 +20,12 @@ async function request(endpoint, options = {}) {
   const data = text ? JSON.parse(text) : {};
 
   if (!res.ok) {
-    throw new Error(data.message || 'Error en la solicitud');
+    // ASP.NET ModelState validation errors: { errors: { Field: ["msg", ...] } }
+    if (data.errors && typeof data.errors === 'object') {
+      const msgs = Object.values(data.errors).flat().filter(Boolean);
+      if (msgs.length) throw new Error(msgs.join(' · '));
+    }
+    throw new Error(data.message || data.title || `Error ${res.status}`);
   }
 
   return data;
@@ -210,6 +215,9 @@ export const adminApi = {
   // Actions
   createAction: (data) => request('/api/action/create', { method: 'POST', body: JSON.stringify(data) }),
   getAllActions: () => request('/api/action/all'),
+
+  // Admin Companies
+  createCompany: (data) => request('/api/company/admin/register', { method: 'POST', body: JSON.stringify(data) }),
 
   // Admin Users (detailed)
   getAllUsersDetailed: () => request('/api/admin/users'),

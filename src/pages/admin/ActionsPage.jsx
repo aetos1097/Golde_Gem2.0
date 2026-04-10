@@ -4,7 +4,7 @@ import { adminApi } from '../../api/client';
 import AdminTable from '../../components/admin/AdminTable';
 import FormModal from '../../components/admin/FormModal';
 import StatusBadge from '../../components/admin/StatusBadge';
-import { toastSuccess } from '../../utils/alerts';
+import { toastSuccess, alertError } from '../../utils/alerts';
 
 const columns = [
   { key: 'name', label: 'Nombre' },
@@ -55,6 +55,7 @@ export default function ActionsPage() {
       toastSuccess('Acción creada');
     } catch (err) {
       setFormError(err.message);
+      alertError('Error', err.message || 'Ocurrió un error');
     }
     setFormLoading(false);
   };
