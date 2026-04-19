@@ -22,6 +22,7 @@ import RegionsPage from './pages/admin/RegionsPage';
 import ContactsPage from './pages/admin/ContactsPage';
 import CompaniesPage from './pages/admin/CompaniesPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
+import ProductTypesPage from './pages/admin/ProductTypesPage';
 import ProfilePage from './pages/ProfilePage';
 import CompanyDashboardPage from './pages/CompanyDashboardPage';
 import OrdersPage from './pages/OrdersPage';
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="contactos" element={<ContactsPage />} />
             <Route path="empresas" element={<CompaniesPage />} />
             <Route path="productos" element={<AdminProductsPage />} />
+            <Route path="tipos-producto" element={<ProductTypesPage />} />
           </Route>
         </Route>
       </Routes>

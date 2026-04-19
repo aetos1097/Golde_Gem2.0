@@ -1,24 +1,28 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus } from 'lucide-react';
-import { adminApi } from '../../api/client';
+import { productTypeApi } from '../../api/client';
 import AdminTable from '../../components/admin/AdminTable';
 import FormModal from '../../components/admin/FormModal';
 import StatusBadge from '../../components/admin/StatusBadge';
-import { toastSuccess, alertError, alertConfirmDelete } from '../../utils/alerts';
+import { alertError, alertConfirmDelete, toastSuccess } from '../../utils/alerts';
 
 const fields = [
-  { name: 'name', label: 'Nombre', type: 'text', required: true, placeholder: 'Admin' },
-  { name: 'description', label: 'Descripcion', type: 'textarea', placeholder: 'Descripcion del rol' },
+  { name: 'name', label: 'Nombre', type: 'text', required: true, placeholder: 'Anillos' },
+  { name: 'code', label: 'Codigo', type: 'text', required: true, placeholder: 'RINGS' },
+  { name: 'description', label: 'Descripcion', type: 'textarea', placeholder: 'Categoría de anillos...' },
+  { name: 'icon', label: 'Icono (opcional)', type: 'text', placeholder: 'ring' },
 ];
 
 const columns = [
   { key: 'name', label: 'Nombre' },
+  { key: 'code', label: 'Codigo' },
   { key: 'description', label: 'Descripcion', render: (row) => row.description || '-' },
+  { key: 'icon', label: 'Icono', render: (row) => row.icon || '-' },
   { key: 'isActive', label: 'Estado', render: (row) => <StatusBadge active={row.isActive} /> },
-  { key: 'createdAt', label: 'Creado', render: (row) => new Date(row.createdAt).toLocaleDateString() },
+  { key: 'createdAt', label: 'Creado', render: (row) => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : '-' },
 ];
 
-export default function RolesPage() {
+export default function ProductTypesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,9 +33,11 @@ export default function RolesPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await adminApi.getAllRoles();
+      const res = await productTypeApi.getAll();
       setItems(res.data || []);
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error('Error cargando tipos de producto:', err);
+    }
     setLoading(false);
   }, []);
 
@@ -41,15 +47,21 @@ export default function RolesPage() {
     setFormLoading(true);
     setFormError('');
     try {
+      const payload = {
+        name: (values.name || '').trim(),
+        code: (values.code || '').trim(),
+        description: values.description || '',
+        icon: values.icon || '',
+      };
       if (editing) {
-        await adminApi.updateRole(editing.id, values);
+        await productTypeApi.update(editing.id, payload);
       } else {
-        await adminApi.createRole(values);
+        await productTypeApi.create(payload);
       }
       setModalOpen(false);
       setEditing(null);
       load();
-      toastSuccess(editing ? 'Rol actualizado' : 'Rol creado');
+      toastSuccess(editing ? 'Tipo de producto actualizado' : 'Tipo de producto creado');
     } catch (err) {
       setFormError(err.message);
       alertError('Error', err.message || 'Ocurrió un error');
@@ -58,12 +70,12 @@ export default function RolesPage() {
   };
 
   const handleDelete = async (row) => {
-    const result = await alertConfirmDelete('Eliminar rol', `Eliminar "${row.name}"?`);
+    const result = await alertConfirmDelete('Confirmar eliminación', `Eliminar "${row.name}"?`);
     if (!result.isConfirmed) return;
     try {
-      await adminApi.deleteRole(row.id);
+      await productTypeApi.delete(row.id);
       load();
-      toastSuccess('Rol eliminado');
+      toastSuccess('Tipo de producto eliminado');
     } catch (err) {
       alertError('Error', err.message || 'Error al eliminar');
     }
@@ -93,7 +105,7 @@ export default function RolesPage() {
       <FormModal
         isOpen={modalOpen}
         onClose={() => { setModalOpen(false); setEditing(null); }}
-        title={editing ? 'Editar Rol' : 'Crear Rol'}
+        title={editing ? 'Editar Tipo de Producto' : 'Crear Tipo de Producto'}
         fields={fields}
         initialValues={editing || {}}
         onSubmit={handleSubmit}

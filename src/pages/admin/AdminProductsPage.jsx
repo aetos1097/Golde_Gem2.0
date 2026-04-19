@@ -66,7 +66,8 @@ export default function AdminProductsPage() {
       name: 'productTypeId', label: 'Categoría', type: 'select', required: true,
       options: productTypes.map((pt) => ({ value: pt.id, label: pt.name })),
     },
-    { name: 'whatsAppMessage', label: 'Mensaje WhatsApp (opcional)', type: 'textarea', placeholder: 'Hola, me interesa...' },
+    { name: 'initialChatMessage', label: 'Mensaje inicial del chat (opcional)', type: 'textarea', placeholder: 'Si lo dejas vacío, se genera uno automático. Este texto se envía como primer mensaje cuando un comprador inicie la conversación.' },
+    { name: 'image', label: 'Imagen del producto', type: 'file', accept: 'image/*', placeholder: 'Seleccionar imagen...' },
   ];
 
   const handleSubmit = async (values) => {
@@ -79,14 +80,20 @@ export default function AdminProductsPage() {
         description: values.description || '',
         referencePrice: parseFloat(values.referencePrice),
         isNegotiable: values.isNegotiable === 'true' || values.isNegotiable === true,
-        whatsAppMessage: values.whatsAppMessage || '',
+        initialChatMessage: values.initialChatMessage || '',
         companyId: selectedCompany.id,
         productTypeId: values.productTypeId,
       };
+      let productId;
       if (editing) {
         await productApi.update(editing.id, payload);
+        productId = editing.id;
       } else {
-        await productApi.create(payload);
+        const res = await productApi.create(payload);
+        productId = res.data?.id;
+      }
+      if (values.image instanceof File && productId) {
+        await productImageApi.upload(productId, values.image);
       }
       setModalOpen(false);
       setEditing(null);

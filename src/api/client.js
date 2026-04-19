@@ -99,6 +99,12 @@ export const companyApi = {
       method: 'POST',
       body: JSON.stringify(company),
     }),
+  update: (id, company) =>
+    request(`/api/company/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(company),
+    }),
+  uploadLogo: (id, file) => uploadFile(`/api/company/${id}/logo`, file),
 };
 
 // ── Chat ──
@@ -165,6 +171,10 @@ export const preferencesApi = {
 // ── Product Types ──
 export const productTypeApi = {
   getAll: () => request('/api/product-type/all'),
+  getById: (id) => request(`/api/product-type/${id}`),
+  create: (data) => request('/api/product-type/create', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id, data) => request(`/api/product-type/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id) => request(`/api/product-type/${id}`, { method: 'DELETE' }),
 };
 
 // ── Lookups (cualquier usuario autenticado) ──
@@ -184,6 +194,11 @@ export const municipalityApi = {
   getByDepartmentId: (departmentId) => request(`/api/municipality/by-department/${departmentId}`),
 };
 
+// ── Dashboard ──
+export const dashboardApi = {
+  getStats: () => request('/api/dashboard/stats'),
+};
+
 // ── Admin ──
 export const adminApi = {
   // Users
@@ -196,6 +211,8 @@ export const adminApi = {
   // Roles
   createRole: (data) => request('/api/role/create', { method: 'POST', body: JSON.stringify(data) }),
   getAllRoles: () => request('/api/role/all'),
+  updateRole: (id, data) => request(`/api/role/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteRole: (id) => request(`/api/role/${id}`, { method: 'DELETE' }),
 
   // Modules
   createModule: (data) => request('/api/module/create', { method: 'POST', body: JSON.stringify(data) }),
@@ -215,14 +232,26 @@ export const adminApi = {
   // Actions
   createAction: (data) => request('/api/action/create', { method: 'POST', body: JSON.stringify(data) }),
   getAllActions: () => request('/api/action/all'),
+  updateAction: (id, data) => request(`/api/action/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteAction: (id) => request(`/api/action/${id}`, { method: 'DELETE' }),
+
+  // Action Types
+  createActionType: (data) => request('/api/action-type/create', { method: 'POST', body: JSON.stringify(data) }),
+  getAllActionTypes: () => request('/api/action-type/all'),
+  updateActionType: (id, data) => request(`/api/action-type/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteActionType: (id) => request(`/api/action-type/${id}`, { method: 'DELETE' }),
 
   // Admin Companies
   createCompany: (data) => request('/api/company/admin/register', { method: 'POST', body: JSON.stringify(data) }),
 
   // Admin Users (detailed)
   getAllUsersDetailed: () => request('/api/admin/users'),
+  getUsersWithoutPerson: () => request('/api/admin/users/without-person'),
   changePassword: (userId, data) => request(`/api/admin/users/${userId}/password`, { method: 'PUT', body: JSON.stringify(data) }),
   updateUserRoles: (userId, data) => request(`/api/admin/users/${userId}/roles`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Admin Persons
+  createPersonForUser: (userId, data) => request(`/api/person/admin/${userId}`, { method: 'POST', body: JSON.stringify(data) }),
 
   // Document Types
   createDocType: (data) => request('/api/document-type/create', { method: 'POST', body: JSON.stringify(data) }),

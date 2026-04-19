@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, ImagePlus } from 'lucide-react';
 import SearchableSelect from './SearchableSelect';
 
 export default function FormModal({ isOpen, onClose, title, fields, initialValues = {}, onSubmit, loading, error }) {
@@ -81,6 +81,33 @@ export default function FormModal({ isOpen, onClose, title, fields, initialValue
                   required={field.required}
                   isClearable={!field.required}
                 />
+              ) : field.type === 'file' ? (
+                <div className="space-y-2">
+                  <label
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition hover:opacity-80"
+                    style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}
+                  >
+                    <ImagePlus size={18} />
+                    <span className="text-sm">
+                      {values[field.name]?.name || field.placeholder || 'Seleccionar imagen...'}
+                    </span>
+                    <input
+                      type="file"
+                      accept={field.accept || 'image/*'}
+                      className="hidden"
+                      onChange={(e) => handleChange(field.name, e.target.files?.[0] || null)}
+                      required={field.required && !values[field.name]}
+                    />
+                  </label>
+                  {values[field.name] instanceof File && (
+                    <img
+                      src={URL.createObjectURL(values[field.name])}
+                      alt="preview"
+                      className="w-24 h-24 rounded-lg object-cover border"
+                      style={{ borderColor: 'var(--border)' }}
+                    />
+                  )}
+                </div>
               ) : field.type === 'multicheck' ? (
                 <div className="flex flex-wrap gap-2 mt-1">
                   {field.options?.map((opt) => {

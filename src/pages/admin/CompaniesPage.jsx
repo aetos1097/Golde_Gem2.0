@@ -11,6 +11,7 @@ export default function CompaniesPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -83,7 +84,7 @@ export default function CompaniesPage() {
     { name: 'name', label: 'Nombre de la empresa', type: 'text', required: true, placeholder: 'Joyería Esmeralda S.A.' },
     { name: 'nit', label: 'NIT', type: 'text', required: true, placeholder: '900123456-7' },
     { name: 'description', label: 'Descripción', type: 'textarea', placeholder: 'Descripción de la empresa...' },
-    { name: 'logo', label: 'Logo (URL)', type: 'text', placeholder: 'https://...' },
+    { name: 'logo', label: 'Logo de la empresa', type: 'file', accept: 'image/*', placeholder: 'Seleccionar imagen...' },
     { name: 'phone', label: 'Teléfono', type: 'text', placeholder: '3001234567' },
     { name: 'email', label: 'Email', type: 'email', placeholder: 'contacto@empresa.com' },
     { name: 'whatsAppNumber', label: 'WhatsApp', type: 'text', placeholder: '573001234567' },
@@ -104,26 +105,51 @@ export default function CompaniesPage() {
     setFormLoading(true);
     setFormError('');
     try {
+      const hasNewFile = values.logo instanceof File;
       const payload = {
         ownerId: values.ownerId,
         name: (values.name || '').trim(),
         nit: (values.nit || '').trim(),
         description: values.description || '',
-        logo: values.logo || '',
+        logo: hasNewFile ? '' : (editing?.logo || ''),
         phone: values.phone || '',
         email: values.email || '',
         whatsAppNumber: values.whatsAppNumber || '',
         isDefault: values.isDefault === 'true' || values.isDefault === true,
       };
-      await adminApi.createCompany(payload);
+
+      let companyId;
+      if (editing) {
+        await companyApi.update(editing.id, payload);
+        companyId = editing.id;
+      } else {
+        const res = await adminApi.createCompany(payload);
+        companyId = res.data?.id;
+      }
+
+      if (hasNewFile && companyId) {
+        await companyApi.uploadLogo(companyId, values.logo);
+      }
+
       setModalOpen(false);
+      setEditing(null);
       load();
-      toastSuccess('Empresa creada. El usuario ahora tiene rol Empresa.');
+      toastSuccess(editing ? 'Empresa actualizada' : 'Empresa creada. El usuario ahora tiene rol Empresa.');
     } catch (err) {
       setFormError(err.message);
-      alertError('Error', err.message || 'Error al crear empresa');
+      alertError('Error', err.message || 'Error al guardar empresa');
     }
     setFormLoading(false);
+  };
+
+  const openEdit = (company) => {
+    setEditing({
+      ...company,
+      isDefault: String(company.isDefault),
+      logo: company.logo || '',
+    });
+    setFormError('');
+    setModalOpen(true);
   };
 
   return (
@@ -139,14 +165,14 @@ export default function CompaniesPage() {
         </button>
       </div>
 
-      <AdminTable columns={columns} data={items} loading={loading} />
+      <AdminTable columns={columns} data={items} loading={loading} onEdit={openEdit} />
 
       <FormModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Crear Empresa"
+        onClose={() => { setModalOpen(false); setEditing(null); }}
+        title={editing ? 'Editar Empresa' : 'Crear Empresa'}
         fields={fields}
-        initialValues={{}}
+        initialValues={editing || {}}
         onSubmit={handleSubmit}
         loading={formLoading}
         error={formError}

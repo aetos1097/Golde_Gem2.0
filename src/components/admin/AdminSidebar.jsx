@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCog, Shield, LayoutGrid, FileText, Zap, FileType, MapPin, Phone, Building2, Package, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { LayoutDashboard, Users, UserCog, Shield, LayoutGrid, FileText, Zap, FileType, MapPin, Phone, Building2, Package, Tag, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const links = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -14,6 +14,7 @@ const links = [
   { to: '/admin/contactos', icon: Phone, label: 'Contactos' },
   { to: '/admin/empresas', icon: Building2, label: 'Empresas' },
   { to: '/admin/productos', icon: Package, label: 'Productos' },
+  { to: '/admin/tipos-producto', icon: Tag, label: 'Tipos Producto' },
 ];
 
 export default function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
@@ -69,7 +70,7 @@ export default function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobile
     <>
       {/* Desktop Sidebar */}
       <aside
-        className="hidden md:flex flex-col border-r flex-shrink-0 transition-all duration-300"
+        className="hidden md:flex flex-col border-r flex-shrink-0 transition-all duration-300 sticky top-0 self-start h-screen overflow-y-auto"
         style={{
           width: collapsed ? 64 : 256,
           background: 'var(--bg-secondary)',

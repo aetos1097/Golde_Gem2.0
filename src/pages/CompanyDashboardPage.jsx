@@ -63,22 +63,30 @@ export default function CompanyDashboardPage() {
       name: 'productTypeId', label: 'Categoria', type: 'select', required: true,
       options: productTypes.map((pt) => ({ value: pt.id, label: pt.name })),
     },
+    { name: 'image', label: 'Imagen del producto', type: 'file', accept: 'image/*', placeholder: 'Seleccionar imagen...' },
   ];
 
   const handleSubmit = async (values) => {
     setFormLoading(true);
     setFormError('');
     try {
+      const { image, ...rest } = values;
       const payload = {
-        ...values,
+        ...rest,
         companyId: selectedCompany.id,
         referencePrice: parseFloat(values.referencePrice),
         isNegotiable: values.isNegotiable === 'true' || values.isNegotiable === true,
       };
+      let productId;
       if (editing) {
         await productApi.update(editing.id, payload);
+        productId = editing.id;
       } else {
-        await productApi.create(payload);
+        const res = await productApi.create(payload);
+        productId = res.data?.id;
+      }
+      if (image instanceof File && productId) {
+        await productImageApi.upload(productId, image);
       }
       setModalOpen(false);
       setEditing(null);
