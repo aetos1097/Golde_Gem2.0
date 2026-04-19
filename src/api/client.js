@@ -75,6 +75,8 @@ export const productApi = {
   search: (query) => request(`/api/product/search?q=${encodeURIComponent(query)}`),
   getById: (id) => request(`/api/product/${id}`),
   getByCompany: (companyId) => request(`/api/product/by-company/${companyId}`),
+  getByCompanyAdmin: (companyId) => request(`/api/product/admin/by-company/${companyId}`),
+  toggleStatus: (id) => request(`/api/product/${id}/toggle-status`, { method: 'PATCH' }),
   getByType: (typeId) => request(`/api/product/by-type/${typeId}`),
   create: (product) =>
     request('/api/product/create', {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Package, Plus, ImagePlus, Trash2, Star } from 'lucide-react';
+import { Package, Plus, ImagePlus, Trash2, Power } from 'lucide-react';
 import { productApi, companyApi, productImageApi, productTypeApi } from '../../api/client';
 import FormModal from '../../components/admin/FormModal';
 import { alertError, alertConfirmDelete, toastSuccess } from '../../utils/alerts';
@@ -46,7 +46,7 @@ export default function AdminProductsPage() {
     if (!selectedCompany) { setProducts([]); return; }
     setLoading(true);
     try {
-      const res = await productApi.getByCompany(selectedCompany.id);
+      const res = await productApi.getByCompanyAdmin(selectedCompany.id);
       setProducts(res.data || []);
     } catch (err) {
       console.error('Error loading products:', err);
@@ -135,23 +135,13 @@ export default function AdminProductsPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleDeleteImage = async (productId, imageId) => {
+  const handleToggleStatus = async (product) => {
     try {
-      await productImageApi.delete(productId, imageId);
+      await productApi.toggleStatus(product.id);
       loadProducts();
-      toastSuccess('Imagen eliminada');
+      toastSuccess(product.isActive ? 'Producto desactivado' : 'Producto activado');
     } catch (err) {
-      alertError('Error', err.message);
-    }
-  };
-
-  const handleSetPrimary = async (productId, imageId) => {
-    try {
-      await productImageApi.setPrimary(productId, imageId);
-      loadProducts();
-      toastSuccess('Imagen principal actualizada');
-    } catch (err) {
-      alertError('Error', err.message);
+      alertError('Error', err.message || 'Error al cambiar estado');
     }
   };
 
@@ -228,12 +218,34 @@ export default function AdminProductsPage() {
                     <img src={product.primaryImageUrl || '/Joyas/anillo1.jpeg'} alt={product.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold truncate" style={{ color: 'var(--text-primary)' }}>{product.name}</h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-display font-bold truncate" style={{ color: 'var(--text-primary)' }}>{product.name}</h3>
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+                        style={{
+                          background: product.isActive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
+                          color: product.isActive ? '#22c55e' : '#ef4444',
+                        }}
+                      >
+                        {product.isActive ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </div>
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{product.productTypeName}</p>
                     <p className="text-lg font-bold mt-1" style={{ color: 'var(--gold)' }}>{formatPrice(product.referencePrice)}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => handleToggleStatus(product)}
+                    className="p-2 rounded-lg transition hover:opacity-80"
+                    style={{
+                      background: product.isActive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                      color: product.isActive ? '#22c55e' : '#ef4444',
+                    }}
+                    title={product.isActive ? 'Desactivar producto' : 'Activar producto'}
+                  >
+                    <Power size={16} />
+                  </button>
                   <button
                     onClick={() => { setImageProduct(product); fileInputRef.current?.click(); }}
                     className="p-2 rounded-lg transition hover:opacity-80"
@@ -257,26 +269,6 @@ export default function AdminProductsPage() {
                   </button>
                 </div>
               </div>
-
-              {product.images?.length > 0 && (
-                <div className="flex gap-2 mt-3 flex-wrap">
-                  {product.images.map((img) => (
-                    <div key={img.id} className="relative group">
-                      <img src={img.url} alt={img.altText} className="w-16 h-16 rounded-lg object-cover border" style={{ borderColor: img.isPrimary ? 'var(--gold)' : 'var(--border)' }} />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition rounded-lg flex items-center justify-center gap-1">
-                        {!img.isPrimary && (
-                          <button onClick={() => handleSetPrimary(product.id, img.id)} className="text-yellow-400" title="Hacer principal">
-                            <Star size={12} />
-                          </button>
-                        )}
-                        <button onClick={() => handleDeleteImage(product.id, img.id)} className="text-red-400" title="Eliminar">
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           ))}
         </div>
