@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Pencil, Trash2, Eye, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import Spinner from './Spinner';
 
 const DEFAULT_PAGE_SIZES = [10, 25, 50, 100];
 
@@ -45,9 +46,7 @@ export default function AdminTable({
   if (loading) {
     return (
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}>
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-14 border-b animate-pulse" style={{ borderColor: 'var(--border)', background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--bg-secondary)' }} />
-        ))}
+        <Spinner label="Cargando información..." />
       </div>
     );
   }

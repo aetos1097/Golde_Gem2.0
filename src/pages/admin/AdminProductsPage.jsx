@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Package, Plus, ImagePlus, Trash2, Power } from 'lucide-react';
 import { productApi, companyApi, productImageApi, productTypeApi } from '../../api/client';
 import FormModal from '../../components/admin/FormModal';
+import Spinner from '../../components/admin/Spinner';
 import { alertError, alertConfirmDelete, toastSuccess } from '../../utils/alerts';
 
 function formatPrice(price) {
@@ -194,9 +195,7 @@ export default function AdminProductsPage() {
       )}
 
       {loading ? (
-        <div className="text-center py-20">
-          <div className="w-10 h-10 border-3 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderColor: 'var(--gold)', borderTopColor: 'transparent' }} />
-        </div>
+        <Spinner label="Cargando productos..." />
       ) : !selectedCompany ? (
         <div className="text-center py-20 rounded-2xl border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
           <Package size={48} className="mx-auto mb-4 opacity-30" style={{ color: 'var(--text-muted)' }} />
